@@ -1,0 +1,5 @@
+---
+- hosts: instana
+  remote_user: root
+  roles:
+    - instana
