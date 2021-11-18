@@ -1,0 +1,56 @@
+type                    = "single"
+profile                 = "normal"
+tenant                  = "ibminternalxlc"
+unit                    = "educational"
+agent_key               = "qUMhYJxjSv6uZh2SyqTEnw"
+download_key            = "qUMhYJxjSv6uZh2SyqTEnw"
+sales_key               = "pgABSBp_SnqIr5oMD68HoQ"
+host_name               = {{ FQDN | to_json }}
+token_secret            = "h9k04sEMIzbk"
+clickhouse_bind_address = ""
+
+dir {
+  metrics = "/mnt/metrics"
+  traces  = "/mnt/traces"
+  data    = "/mnt/data"
+  logs    = "/var/log/instana"
+}
+
+artifact_repository {
+  repository_url = "https://artifact-public.instana.io/artifactory/shared/"
+  user           = "_"
+  password       = "qUMhYJxjSv6uZh2SyqTEnw"
+}
+
+email {
+  smtp {
+    from      = ""
+    host      = ""
+    port      = 0
+    user      = ""
+    password  = ""
+    use_ssl   = false
+    start_tls = false
+  }
+
+  ses {
+    from            = ""
+    aws_access_key  = ""
+    aws_access_id   = ""
+    aws_return_path = ""
+    aws_region      = ""
+  }
+}
+
+docker_repository {
+  base_url = "containers.instana.io"
+  username = "_"
+  password = "qUMhYJxjSv6uZh2SyqTEnw"
+}
+
+geo_db {
+  download_url = "https://packages.instana.io/geodb/geolite2-city.tar.gz"
+  file_name    = "GeoLite2-City.mmdb"
+  user         = ""
+  password     = "qUMhYJxjSv6uZh2SyqTEnw"
+}

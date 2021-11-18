@@ -1,0 +1,99 @@
+---
+# - name: Ping auth-infra.instana.io works
+#   shell: ping -c 1 auth-infra.instana.io
+
+# - name: Data directory is created at /mnt/data
+#   file:
+#     path: /mnt/data
+#     state: directory
+
+# - name: Traces directory is created at /mnt/traces
+#   file:
+#     path: /mnt/traces
+#     state: directory
+
+# - name: Metrics directory is created at /mnt/metrics
+#   file:
+#     path: /mnt/metrics
+#     state: directory
+
+
+# - name: Instana config is initialized
+#   copy:
+#     dest: "/etc/yum.repos.d/Instana-Product.repo"
+#     content: |
+#       [instana-product]
+#       name=Instana-Product
+#       baseurl=https://self-hosted.instana.io/rpm/release/product/rpm/generic/x86_64/Packages
+#       enabled=1
+#       gpgcheck=1
+#       repo_gpgcheck=1
+#       gpgkey=https://self-hosted.instana.io/signing_key.gpg
+#       priority=5
+#       sslverify=1
+#       #proxy=http://x.x.x.x:8080
+#       #proxy_username=
+#       #proxy_password=
+
+# - name: yum makecache is complete
+#   shell: yum makecache -y
+
+# - name: Install instana-console
+#   yum: 
+#     name:
+#       - instana-console
+#       - dnf-command(versionlock)
+#     state: present
+
+# - name: Version lock instana-console
+#   shell: yum versionlock add instana-console
+
+# - name: Host name is retrieved
+#   shell: hostname -f
+#   register: hostname
+
+# - name: Hostname is set
+#   set_fact:
+#     FQDN: "{{ hostname.stdout }}"
+
+# - name: Instana directory is created
+#   file:
+#     path: /root/instana
+#     state: directory
+
+# - name: Instana configuration file is copied
+#   template:
+#     src: settings.hcl.j2
+#     dest: "/root/instana/instana-settings.hcl"
+#     owner: root
+#     group: root
+#     mode: 0644
+
+- name: Instana is initialized
+  command: /usr/bin/instana init --file /root/instana/instana-settings.hcl --yes
+  register: instana_init_output
+
+- name: Output is printed
+  ansible.builtin.debug:
+    msg:
+      - "{{ instana_init_output }}"
+
+# - name: instana init installation logs
+#   debug: 
+#     var: instana_output.stdout_lines
+
+# - name: Download Instana License
+#   command: /usr/bin/instana license download
+#   register: license_download_output
+
+# - name: Download license status
+#   debug: 
+#     var: license_download_output.stdout_lines
+
+# - name: Download Instana License
+#   command: /usr/bin/instana license import
+#   register: license_import_ouptut
+
+# - name: Import license status
+#   debug:
+#     var: license_import_ouptut.stdout_lines
