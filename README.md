@@ -21,3 +21,19 @@ sales_key               = "xxxxxxxxxx"
 host_name               = "xxxxxxxxxx.xxxxxxxxxx.xxx"
 token_secret            = "xxxxxxxxxx"
 ```
+
+3. Install Instana Operator on OpenShift
+
+```bash
+helm install instana-agent \
+   --repo https://agents.instana.io/helm \
+   --namespace instana-agent \
+   --create-namespace \
+   --set openshift=true \
+   --set agent.key=xxxxxxxxxx \
+   --set agent.endpointHost=xxx.xxx.xxx.xxx \
+   --set agent.endpointPort=1444 \
+   --set cluster.name='openshift-dev' \
+   --set zone.name='Toronto' \
+   instana-agent
+```
