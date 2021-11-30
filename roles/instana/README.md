@@ -1,2 +1,0 @@
-Instana Install Playbook
-========================

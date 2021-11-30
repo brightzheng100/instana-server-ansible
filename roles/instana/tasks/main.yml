@@ -1,99 +1,134 @@
 ---
-# - name: Ping auth-infra.instana.io works
-#   shell: ping -c 1 auth-infra.instana.io
+- name: Ping auth-infra.instana.io works
+  shell: ping -c 1 auth-infra.instana.io
 
-# - name: Data directory is created at /mnt/data
-#   file:
-#     path: /mnt/data
-#     state: directory
+- name: Docker is started on boot
+  shell: systemctl enable docker
 
-# - name: Traces directory is created at /mnt/traces
-#   file:
-#     path: /mnt/traces
-#     state: directory
+- name: Data directory is created at /mnt/data
+  file:
+    path: /mnt/data
+    state: directory
 
-# - name: Metrics directory is created at /mnt/metrics
-#   file:
-#     path: /mnt/metrics
-#     state: directory
+- name: Traces directory is created at /mnt/traces
+  file:
+    path: /mnt/traces
+    state: directory
 
+- name: Metrics directory is created at /mnt/metrics
+  file:
+    path: /mnt/metrics
+    state: directory
 
-# - name: Instana config is initialized
-#   copy:
-#     dest: "/etc/yum.repos.d/Instana-Product.repo"
-#     content: |
-#       [instana-product]
-#       name=Instana-Product
-#       baseurl=https://self-hosted.instana.io/rpm/release/product/rpm/generic/x86_64/Packages
-#       enabled=1
-#       gpgcheck=1
-#       repo_gpgcheck=1
-#       gpgkey=https://self-hosted.instana.io/signing_key.gpg
-#       priority=5
-#       sslverify=1
-#       #proxy=http://x.x.x.x:8080
-#       #proxy_username=
-#       #proxy_password=
+- name: Instana config is initialized
+  copy:
+    dest: "/etc/apt/sources.list.d/instana-product.list"
+    content: |
+      deb [arch=amd64] https://self-hosted.instana.io/apt generic main
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution_version is version('20.04', '>=')
 
-# - name: yum makecache is complete
-#   shell: yum makecache -y
+- name: The key is updated
+  shell: wget -qO - "https://self-hosted.instana.io/signing_key.gpg" | apt-key add -
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution_version is version('20.04', '>=')
 
-# - name: Install instana-console
-#   yum: 
-#     name:
-#       - instana-console
-#       - dnf-command(versionlock)
-#     state: present
+- name: The update is run
+  shell: apt-get update --yes
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution_version is version('20.04', '>=')
 
-# - name: Version lock instana-console
-#   shell: yum versionlock add instana-console
+- name: The instana console isinstalled
+  shell: apt-get install instana-console --yes
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution_version is version('20.04', '>=')
 
-# - name: Host name is retrieved
-#   shell: hostname -f
-#   register: hostname
+- name: Instana config is initialized
+  copy:
+    dest: "/etc/apt/preferences.d/instana-console"
+    content: |
+      Package: instana-console
+      Pin: version <version to pin>
+      Pin-Priority: 1000  
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution_version is version('20.04', '>=')
 
-# - name: Hostname is set
-#   set_fact:
-#     FQDN: "{{ hostname.stdout }}"
+- name: Instana config is initialized
+  copy:
+    dest: "/etc/yum.repos.d/Instana-Product.repo"
+    content: |
+      [instana-product]
+      name=Instana-Product
+      baseurl=https://self-hosted.instana.io/rpm/release/product/rpm/generic/x86_64/Packages
+      enabled=1
+      gpgcheck=1
+      repo_gpgcheck=1
+      gpgkey=https://self-hosted.instana.io/signing_key.gpg
+      priority=5
+      sslverify=1
+      #proxy=http://x.x.x.x:8080
+      #proxy_username=
+      #proxy_password=
+  when: ansible_facts['os_family'] == "RedHat"
 
-# - name: Instana directory is created
-#   file:
-#     path: /root/instana
-#     state: directory
+- name: yum makecache is complete
+  shell: yum makecache -y
+  when: ansible_facts['os_family'] == "RedHat"
 
-# - name: Instana configuration file is copied
-#   template:
-#     src: settings.hcl.j2
-#     dest: "/root/instana/instana-settings.hcl"
-#     owner: root
-#     group: root
-#     mode: 0644
+- name: Install instana-console
+  yum: 
+    name:
+      - instana-console
+      - dnf-command(versionlock)
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Version lock instana-console
+  shell: yum versionlock add instana-console
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Host name is retrieved
+  shell: hostname -f
+  register: hostname
+
+- name: Hostname is set
+  set_fact:
+    FQDN: "{{ hostname.stdout }}"
+
+- name: Instana directory is created
+  file:
+    path: /root/instana
+    state: directory
+
+- name: Instana configuration file is copied
+  template:
+    src: settings.hcl.j2
+    dest: "/root/instana/settings.hcl"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Instana lock is removed if exists
+  file:
+    path: /root/.instana/.cli-lock
+    state: absent
+
+- name: Cert directory is created at /root/instana/cert
+  file:
+    path: /root/instana/cert
+    state: directory
+
+- name: Create self-signed certificate
+  shell: openssl req -x509 -newkey rsa:2048 -keyout tls.key -out tls.crt -days 365 -nodes -subj "/CN=monitoring-dev"
+  args:
+    chdir: /root/instana/cert
 
 - name: Instana is initialized
-  command: /usr/bin/instana init --file /root/instana/instana-settings.hcl --yes
-  register: instana_init_output
+  command: /usr/bin/instana init --file /root/instana/settings.hcl --yes
 
-- name: Output is printed
-  ansible.builtin.debug:
-    msg:
-      - "{{ instana_init_output }}"
+- name: Instana License is downloaded
+  command: /usr/bin/instana license download
 
-# - name: instana init installation logs
-#   debug: 
-#     var: instana_output.stdout_lines
+- name: Instana License is imported
+  command: /usr/bin/instana license import
 
-# - name: Download Instana License
-#   command: /usr/bin/instana license download
-#   register: license_download_output
+- name: Instana License is verified
+  command: /usr/bin/instana license verify
 
-# - name: Download license status
-#   debug: 
-#     var: license_download_output.stdout_lines
-
-# - name: Download Instana License
-#   command: /usr/bin/instana license import
-#   register: license_import_ouptut
-
-# - name: Import license status
-#   debug:
-#     var: license_import_ouptut.stdout_lines
+- name: Instana is starte
+  command: /usr/bin/instana start

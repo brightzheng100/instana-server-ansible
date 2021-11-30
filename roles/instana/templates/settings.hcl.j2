@@ -2,18 +2,30 @@ type                    = "single"
 profile                 = "normal"
 tenant                  = "ibminternalxlc"
 unit                    = "educational"
-agent_key               = "qUMhYJxjSv6uZh2SyqTEnw"
-download_key            = "qUMhYJxjSv6uZh2SyqTEnw"
-sales_key               = "pgABSBp_SnqIr5oMD68HoQ"
+agent_key               = "xxxxxxxxxx"
+download_key            = "xxxxxxxxxx"
+sales_key               = "xxxxxxxxxx"
 host_name               = {{ FQDN | to_json }}
-token_secret            = "h9k04sEMIzbk"
+token_secret            = "CrWJsMUESiQW"
 clickhouse_bind_address = ""
+
+cert {
+  crt = "/root/instana/cert/tls.crt"
+  key = "/root/instana/cert/tls.key"
+}
 
 dir {
   metrics = "/mnt/metrics"
   traces  = "/mnt/traces"
   data    = "/mnt/data"
   logs    = "/var/log/instana"
+}
+
+proxy {
+  host     = ""
+  port     = 0
+  user     = ""
+  password = ""
 }
 
 artifact_repository {
@@ -23,6 +35,7 @@ artifact_repository {
 }
 
 email {
+
   smtp {
     from      = ""
     host      = ""
@@ -53,4 +66,62 @@ geo_db {
   file_name    = "GeoLite2-City.mmdb"
   user         = ""
   password     = "qUMhYJxjSv6uZh2SyqTEnw"
+}
+
+feature "useInstanaSaasEumTrackingUrlEnabled" {
+  enabled = true
+}
+feature "skipOnboardingDialog" {
+  enabled = true
+}
+feature "agentMonitoringIssuesEnabled" {
+  enabled = true
+}
+feature "rulesMemoryleakEnabled" {
+  enabled = true
+}
+feature "fullTermsConfigEnabled" {
+  enabled = true
+}
+feature "pcfEnabled" {
+  enabled = true
+}
+feature "showUserSettingInternalTagsInUA" {
+  enabled = true
+}
+feature "authenticationOidcEnabled" {
+  enabled = true
+}
+feature "loggingEnabled" {
+  enabled = false
+}
+feature "loggingEnabledOnTrace" {
+  enabled = false
+}
+feature "highResolutionInfrastructureMetricsEnabled" {
+  enabled = true
+}
+feature "beeinstanaInfraMetricsEnabled" {
+  enabled = false
+}
+feature "infraMetricsWidgetEnabled" {
+  enabled = false
+}
+feature "infraExplorePresentationEnabled" {
+  enabled = false
+}
+feature "infraExploreDataEnabled" {
+  enabled = false
+}
+feature "infrastructureExploreDataEnabled" {
+  enabled = false
+}
+
+credential "adminApi" {
+  user     = "InstanaAdminUser"
+  password = "FH5qVuI2aF"
+}
+credential "serviceApi" {
+  user     = "InstanaServiceUser"
+  password = "mSbPLUMcdB"
 }
