@@ -8,7 +8,7 @@ Install Instana on VM
 xxx.xxx.xxx.xxx
 ```
 
-2. Update instana/templates/settings.hcl file based on your requirements
+2. Update [instana configuration](https://github.ibm.com/Bhavesh-Patel/instana/blob/master/roles/instana/templates/settings.hcl.j2) file based on your requirements
 
 ```bash
 type                    = "single"
@@ -20,6 +20,17 @@ download_key            = "xxxxxxxxxx"
 sales_key               = "xxxxxxxxxx"
 host_name               = "xxxxxxxxxx.xxxxxxxxxx.xxx"
 token_secret            = "xxxxxxxxxx"
+```
+
+> Recommended to have each mount on a separate SSD.
+
+```bash
+dir {
+  metrics = "/mnt/metrics"
+  traces  = "/mnt/traces"
+  data    = "/mnt/data"
+  logs    = "/var/log/instana"
+}
 ```
 
 3. Run Ansible script to install Instana on the VM along with required dependencies
