@@ -1,5 +1,5 @@
-Instana Install Playbook
-========================
+Install Instana on VM
+=====================
 
 1. Update hosts file with the IP address of Instana VM
 
@@ -22,7 +22,16 @@ host_name               = "xxxxxxxxxx.xxxxxxxxxx.xxx"
 token_secret            = "xxxxxxxxxx"
 ```
 
-3. Install Instana Operator on OpenShift
+3. Run Ansible script to install Instana on the VM along with required dependencies
+
+```bash
+ansible main.yml
+```
+
+Install Instana agent on OpenShift
+==================================
+
+1. If not already installed, Install Instana Operator on OpenShift
 
 ```bash
 helm install instana-agent \
@@ -33,7 +42,7 @@ helm install instana-agent \
    --set agent.key=xxxxxxxxxx \
    --set agent.endpointHost=xxx.xxx.xxx.xxx \
    --set agent.endpointPort=1444 \
-   --set cluster.name='openshift-dev' \
-   --set zone.name='Toronto' \
+   --set cluster.name='xxxxxxxx' \
+   --set zone.name='xxxxxxxx' \
    instana-agent
 ```
