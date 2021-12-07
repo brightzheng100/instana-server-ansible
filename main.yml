@@ -2,5 +2,5 @@
 - hosts: instana
   remote_user: root
   roles:
-    - geerlingguy.docker
+    - docker
     - instana
