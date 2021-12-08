@@ -4,8 +4,8 @@
 |Instana using this playbook|40m|
 
 
-Install Instana on VM
-=====================
+Install Instana on Baremetal or Virtual Machine
+===============================================
 
 1. Update [hosts](https://github.ibm.com/Bhavesh-Patel/instana/blob/master/hosts) file with the IP address of the Instana VM
 
