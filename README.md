@@ -1,14 +1,16 @@
 Install Instana on VM
 =====================
 
-1. Update [hosts](https://github.ibm.com/Bhavesh-Patel/instana/blob/master/hosts) file with the IP address of Instana VM
+### Click [here](https://ibm.box.com/s/ugn866sudhv0edm0mbhdgr5mymi6yoeb) to watch the video recording.
+
+1. Update [hosts](https://github.ibm.com/Bhavesh-Patel/instana/blob/master/hosts) file with the IP address of the Instana VM
 
 ```bash
 [instana]
 xxx.xxx.xxx.xxx
 ```
 
-2. Update [instana configuration](https://github.ibm.com/Bhavesh-Patel/instana/blob/master/roles/instana/templates/settings.hcl.j2) file based on your requirements
+2. Update [instana configuration](https://github.ibm.com/Bhavesh-Patel/instana/blob/master/roles/instana/templates/settings.hcl.j2) file to add licence information and additional configuration
 
 ```bash
 type                    = "single"
@@ -22,7 +24,7 @@ host_name               = "xxxxxxxxxx.xxxxxxxxxx.xxx"
 token_secret            = "xxxxxxxxxx"
 ```
 
-> Recommended to have each mount on a separate SSD.
+> For production installation, Instana recommendeds to have each mount on a separate SSD.
 
 ```bash
 dir {
@@ -33,10 +35,10 @@ dir {
 }
 ```
 
-3. Run Ansible script to install Instana on the VM along with required dependencies
+3. Run Ansible script to install Instana on the VM along with required dependencies.
 
 ```bash
-ansible main.yml
+ansible-playbook main.yml
 ```
 
 Install Instana agent on OpenShift
@@ -56,4 +58,11 @@ helm install instana-agent \
    --set cluster.name='xxxxxxxx' \
    --set zone.name='xxxxxxxx' \
    instana-agent
+```
+
+Uninstall Instana agent from OpenShift
+======================================
+
+```bash
+helm uninstall instana-agent
 ```
