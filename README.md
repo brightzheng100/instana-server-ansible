@@ -7,6 +7,8 @@
 Install Instana on Baremetal or Virtual Machine
 ===============================================
 
+> The machine you are installing Instana onto, must have 16 CPU and 64 GB available memory. Check [Instana docs](https://www.instana.com/docs/self_hosted_instana/installation/) for more information.
+
 1. Update [hosts](https://github.ibm.com/Bhavesh-Patel/instana/blob/master/hosts) file with the IP address of the Instana VM
 
 ```bash
