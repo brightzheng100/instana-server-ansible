@@ -113,19 +113,30 @@
     path: /root/instana/cert
     state: directory
 
+# - name: Create self-signed certificate
+#   shell: openssl req -x509 -newkey rsa:2048 -keyout tls.key -out tls.crt -days 365 -nodes -subj "/CN={{ instana_server_fqdn }}"
+#   args:
+#     chdir: /root/instana/cert
+
+- name: Download mkcert Tool
+  get_url:
+    url: https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
+    dest: /root/instana/mkcert
+    mode: 0755
+
 - name: Create self-signed certificate
-  shell: openssl req -x509 -newkey rsa:2048 -keyout tls.key -out tls.crt -days 365 -nodes -subj "/CN=monitoring-dev"
+  shell: ./mkcert -cert-file cert/tls.crt -key-file cert/tls.key "{{ instana_server_fqdn }}"
   args:
-    chdir: /root/instana/cert
+    chdir: /root/instana
 
 - name: Instana is initialized
   shell: /usr/bin/instana init --file /root/instana/settings.hcl --yes --force | tee -a /root/instana/installation.log
 
 - name: Instana License is downloaded
-  shell: /usr/bin/instana license download
+  shell: /usr/bin/instana license download --key="{{ instana_sales_key }}"
 
 - name: Instana License is imported
-  shell: /usr/bin/instana license import
+  shell: /usr/bin/instana license import --file=/root/license
 
 - name: Instana License is verified
   shell: /usr/bin/instana license verify

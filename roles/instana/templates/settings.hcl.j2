@@ -1,11 +1,11 @@
 type                    = "single"
 profile                 = "normal"
-tenant                  = "ibminternalxlc"
-unit                    = "educational"
-agent_key               = "xxxxxxxxxx"
-download_key            = "xxxxxxxxxx"
-sales_key               = "xxxxxxxxxx"
-host_name               = {{ FQDN | to_json }}
+tenant                  = "{{ instana_tenant }}"
+unit                    = "{{ instana_unit }}"
+agent_key               = "{{ instana_agent_key }}"
+download_key            = "{{ instana_download_key }}"
+sales_key               = "{{ instana_sales_key }}"
+host_name               = "{{ instana_server_fqdn }}"
 token_secret            = "CrWJsMUESiQW"
 clickhouse_bind_address = ""
 
@@ -15,9 +15,9 @@ cert {
 }
 
 dir {
-  metrics = "/mnt/metrics"
-  traces  = "/mnt/traces"
-  data    = "/mnt/data"
+  metrics = "{{ instana_metrics_mount }}"
+  traces  = "{{ instana_traces_mount }}"
+  data    = "{{ instana_data_mount }}"
   logs    = "/var/log/instana"
 }
 
@@ -31,7 +31,7 @@ proxy {
 artifact_repository {
   repository_url = "https://artifact-public.instana.io/artifactory/shared/"
   user           = "_"
-  password       = "qUMhYJxjSv6uZh2SyqTEnw"
+  password       = "{{ instana_download_key }}"
 }
 
 email {
@@ -58,14 +58,14 @@ email {
 docker_repository {
   base_url = "containers.instana.io"
   username = "_"
-  password = "qUMhYJxjSv6uZh2SyqTEnw"
+  password = "{{ instana_download_key }}"
 }
 
 geo_db {
   download_url = "https://packages.instana.io/geodb/geolite2-city.tar.gz"
   file_name    = "GeoLite2-City.mmdb"
   user         = ""
-  password     = "qUMhYJxjSv6uZh2SyqTEnw"
+  password     = "{{ instana_download_key }}"
 }
 
 feature "useInstanaSaasEumTrackingUrlEnabled" {
@@ -117,11 +117,6 @@ feature "infrastructureExploreDataEnabled" {
   enabled = false
 }
 
-credential "adminApi" {
-  user     = "InstanaAdminUser"
-  password = "FH5qVuI2aF"
-}
-credential "serviceApi" {
-  user     = "InstanaServiceUser"
-  password = "mSbPLUMcdB"
+feature "applicationSmartAlertsEnabled" {
+  enabled = true
 }
