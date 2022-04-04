@@ -1,0 +1,11 @@
+{
+  "instana_server_fqdn":    "168.1.202.41.nip.io",
+  "instana_tenant":         "ibm",
+  "instana_unit":           "apac",
+  "instana_agent_key":      "xxxxxxxxxxxxxxxxxxxxxx",
+  "instana_download_key":   "xxxxxxxxxxxxxxxxxxxxxx",
+  "instana_sales_key":      "xxxxxxxxxxxxxxxxxxxxxx",
+  "instana_metrics_mount":  "/mnt/metrics",
+  "instana_traces_mount":   "/mnt/traces",
+  "instana_data_mount":     "/mnt/data"
+}
