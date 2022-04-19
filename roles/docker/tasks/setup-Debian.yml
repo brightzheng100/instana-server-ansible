@@ -45,7 +45,11 @@
   when: add_repository_key is failed
 
 - name: Add Docker repository.
-  apt_repository:
-    repo: "{{ docker_apt_repository }}"
-    state: present
-    update_cache: true
+  shell: >
+    echo "{{ docker_apt_repository }}" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+- name: Update cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
