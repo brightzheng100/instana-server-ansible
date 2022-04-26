@@ -131,15 +131,25 @@
 
 - name: Instana is initialized
   shell: /usr/bin/instana init --file /root/instana/settings.hcl --yes --force | tee -a /root/instana/installation.log
+  args:
+    chdir: /root/instana
 
 - name: Instana License is downloaded
   shell: /usr/bin/instana license download --key="{{ instana_sales_key }}"
+  args:
+    chdir: /root/instana
 
 - name: Instana License is imported
   shell: /usr/bin/instana license import --file=/root/license
+  args:
+    chdir: /root/instana
 
 - name: Instana License is verified
   shell: /usr/bin/instana license verify
+  args:
+    chdir: /root/instana
 
 - name: Instana is started
   shell: /usr/bin/instana start
+  args:
+    chdir: /root/instana
