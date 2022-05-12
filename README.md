@@ -90,13 +90,10 @@ $ ansible-playbook main.yml --extra-vars "@settings.json"
 Troubleshoot
 ==================================
 
-**Problem**: Installation fails within 2 minutes with an error `fatal: [xxx.xxx.xxx.xxx]: FAILED! => {"changed": false, "msg": "No package matching 'docker-ce' is available"}`
-
-**Solution**: The installation process updated packages and the Linux host requires a reboot. Login to the node and type `reboot`. Wait for upto 5 minutes and re-run the installation command `ansible-playbook main.yml --extra-vars "@settings.json"`.
-
-**Problem**: Installation fails at end during licence import step.
-
-**Solution**: It could be invalid or expired license? Login to the host and check `/var/log/instana/console.log` file for credentials and try to login to the host. You will be able to login to the host if file contains Login credentials.
+|**Problem**|**Solution**|
+|---|---|
+|Installation fails within 2 minutes with an error `fatal: [xxx.xxx.xxx.xxx]: FAILED! => {"changed": false, "msg": "No package matching 'docker-ce' is available"}`|The installation process updated packages and the Linux host requires a reboot. Login to the node and type `reboot`. Wait for upto 5 minutes and re-run the installation command `ansible-playbook main.yml --extra-vars "@settings.json"`.|
+|Installation fails at end during licence import step.|Unknown issue. License file could be invalid? Login to the host and check `/var/log/instana/console.log` file for credentials. If the file contains login credentials then login to the host and Instana login screen will be displayed.|
 
 
 Install Instana Agents
