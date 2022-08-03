@@ -3,24 +3,29 @@
   shell: ping -c 1 auth-infra.instana.io
 
 - name: Docker is started on boot
+  become: true
   shell: systemctl enable docker
 
 - name: Data directory is created at /mnt/data
+  become: true
   file:
     path: /mnt/data
     state: directory
 
 - name: Traces directory is created at /mnt/traces
+  become: true
   file:
     path: /mnt/traces
     state: directory
 
 - name: Metrics directory is created at /mnt/metrics
+  become: true
   file:
     path: /mnt/metrics
     state: directory
 
 - name: Instana config is initialized
+  become: true
   copy:
     dest: "/etc/apt/sources.list.d/instana-product.list"
     content: |
@@ -28,18 +33,22 @@
   when: ansible_distribution == 'Ubuntu' or ansible_distribution_version is version('20.04', '>=')
 
 - name: The key is updated
+  become: true
   shell: wget -qO - "https://self-hosted.instana.io/signing_key.gpg" | apt-key add -
   when: ansible_distribution == 'Ubuntu' or ansible_distribution_version is version('20.04', '>=')
 
 - name: The update is run
+  become: true
   shell: apt-get update --yes
   when: ansible_distribution == 'Ubuntu' or ansible_distribution_version is version('20.04', '>=')
 
 - name: The instana console isinstalled
+  become: true
   shell: apt-get install instana-console --yes
   when: ansible_distribution == 'Ubuntu' or ansible_distribution_version is version('20.04', '>=')
 
 - name: Instana config is initialized
+  become: true
   copy:
     dest: "/etc/apt/preferences.d/instana-console"
     content: |
@@ -49,6 +58,7 @@
   when: ansible_distribution == 'Ubuntu' or ansible_distribution_version is version('20.04', '>=')
 
 - name: Instana config is initialized
+  become: true
   copy:
     dest: "/etc/yum.repos.d/Instana-Product.repo"
     content: |
@@ -67,10 +77,12 @@
   when: ansible_facts['os_family'] == "RedHat"
 
 - name: yum makecache is complete
+  become: true
   shell: yum makecache -y
   when: ansible_facts['os_family'] == "RedHat"
 
 - name: Install instana-console
+  become: true
   yum: 
     name:
       - instana-console
@@ -79,77 +91,94 @@
   when: ansible_facts['os_family'] == "RedHat"
 
 - name: Version lock instana-console
+  become: true
   shell: yum versionlock add instana-console
   when: ansible_facts['os_family'] == "RedHat"
 
 - name: Host name is retrieved
+  become: true
   shell: hostname -f
   register: hostname
 
 - name: Hostname is set
+  become: true
   set_fact:
     FQDN: "{{ hostname.stdout }}"
 
 - name: Instana directory is created
+  become: true
   file:
-    path: /root/instana
+    path: /instana
     state: directory
 
 - name: Instana configuration file is copied
+  become: true
   template:
     src: settings.hcl.j2
-    dest: "/root/instana/settings.hcl"
+    dest: "/instana/settings.hcl"
     owner: root
     group: root
     mode: 0644
 
 - name: Instana lock is removed if exists
+  become: true
   file:
     path: /root/.instana/.cli-lock
     state: absent
 
-- name: Cert directory is created at /root/instana/cert
+- name: Cert directory is created at /instana/cert
+  become: true
   file:
-    path: /root/instana/cert
+    path: /instana/cert
     state: directory
 
-# - name: Create self-signed certificate
-#   shell: openssl req -x509 -newkey rsa:2048 -keyout tls.key -out tls.crt -days 365 -nodes -subj "/CN={{ instana_server_fqdn }}"
-#   args:
-#     chdir: /root/instana/cert
-
 - name: Download mkcert Tool
+  become: true
   get_url:
     url: https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
-    dest: /root/instana/mkcert
+    dest: /instana/mkcert
     mode: 0755
 
 - name: Create self-signed certificate
+  become: true
   shell: ./mkcert -cert-file cert/tls.crt -key-file cert/tls.key "{{ instana_server_fqdn }}"
   args:
-    chdir: /root/instana
+    chdir: /instana
 
 - name: Instana is initialized
-  shell: /usr/bin/instana init --file /root/instana/settings.hcl --yes --force | tee -a /root/instana/installation.log
+  become: true
+  shell: /usr/bin/instana init --file settings.hcl --yes --force | tee -a installation.log
   args:
-    chdir: /root/instana
+    chdir: /instana
 
 - name: Instana License is downloaded
+  become: true
   shell: /usr/bin/instana license download --key="{{ instana_sales_key }}"
   args:
-    chdir: /root/instana
+    chdir: /instana
 
 - name: Instana License is imported
-  shell: /usr/bin/instana license import --file=/root/license
+  become: true
+  shell: /usr/bin/instana license import --file=/instana/license
   args:
-    chdir: /root/instana
+    chdir: /instana
 
 - name: Instana License is verified
+  become: true
   shell: /usr/bin/instana license verify
   args:
-    chdir: /root/instana
+    chdir: /instana
 
 - name: Instana is started
+  become: true
   shell: /usr/bin/instana start
   args:
-    chdir: /root/instana
+    chdir: /instana
+
+- name: Print the Instana credential
+  command: cat installation.log
+  register: logs
+  args:
+    chdir: /instana
+- debug: 
+    var: logs.stdout_lines[-5:]
