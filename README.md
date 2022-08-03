@@ -41,12 +41,16 @@ and check to make sure that only the key(s) you wanted were added.
 
 3. Create a `hosts` file by refering to the [hosts.sample](https://github.ibm.com/Bhavesh-Patel/instana/blob/master/hosts.sample)  with the IP address of the Instana VM:
 
-> NOTE: DE USE THE RIGHT IP FOR BELOW COMMAND!
+> NOTE: 
+> 1. DO USE THE RIGHT IP FOR BELOW COMMAND!
+> 2. If the OS user is not `root` and/or the port is not `22`, we must explicitly specify,like: `xxx.xxx.xxx.xxx ansible_user=itzuser ansible_port=2223`
 
 ```bash
 $ cat > hosts <<EOF
 [instana]
 # The IP/FQDN of your Instana Server
+# Optionally, we can specify OS user, SSH port etc. like: 
+# xxx.xxx.xxx.xxx ansible_user=itzuser ansible_port=2223
 xxx.xxx.xxx.xxx
 EOF
 ```
